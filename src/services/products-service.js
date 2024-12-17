@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const User = require('../models/users');
+const cloudinary = require('../utils/cloudinary');
 
 exports.getAllProducts = async (req) => {
    // const { username } = req;
@@ -15,15 +16,31 @@ exports.getProductById = async (param) => {
    return product;
 };
 
-exports.createProduct = async (data) => {
+exports.createProduct = async (data, imageFile) => {
    const { name, description, price, stock, category } = data;
+
+   let imageUrl = '';
+   if (imageFile) {
+      try {
+         const result = await cloudinary.uploader.upload(imageFile.path, {
+            folder: 'products/',
+         });
+         imageUrl = result.secure_url;
+      } catch (error) {
+         console.log('error', error);
+         throw new Error('Error uploading image to Cloudinary');
+      }
+   }
+
    const newProduct = new Product({
       name,
       description,
       price,
       stock,
       category,
+      imageUrl,
    });
+
    await newProduct.save();
    return {
       data: newProduct,
