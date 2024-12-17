@@ -11,8 +11,10 @@ exports.getAllProducts = async (req) => {
 };
 
 exports.getProductById = async (param) => {
-   const { id } = param;
-   const product = await Product.findById(id);
+   // // const { idconst cleanId = id.trim(); } = param;
+   // console.log('id', id);
+   const cleanId = param.trim();
+   const product = await Product.findById(cleanId);
    return product;
 };
 
